@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>{{title}}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+
+<body>
+    <div id=app>
+        <div class="main">
+            <h1><a href="/">学生管理系统<span class="fa fa-home fa-fw"></span></a></h1>
+            <p>使用技术：前端：Vue框架+Bootstrap &nbsp;&nbsp;&nbsp;&nbsp;后端：Node &nbsp;&nbsp;&nbsp;&nbsp;数据库：MongoDB</p>
+            <div class="main_menu clearfix">
+                <div class="dropdown fl">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <i class="fa fa-cog"></i> 菜单
+                 <span class="caret"></span>
+             </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <!-- <li><a href="javascript:;" id="fileSave">保存</a></li>
+                        <li><a href="#">另存为...</a></li>
+                        <li><a href="#">打开...</a></li> -->
+                        <li><a href="javascript:;" id="deleteAll" @click="deleteAll()"><i class="fa fa-trash-o fa-lg"></i> 删除所有文档</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="javascript: window.location.href='about:blank'; window.close();"><i class="fa fa-power-off"></i> 退出</a></li>
+                    </ul>
+                </div>
+                <!-- 新建 -->
+                <button class="btn btn-primary fl btn_left" type="button" @click="showFlag=true"><i class="fa fa-user-plus"></i> </button>
+            </div>
+            <div class="main_table">
+                <table class="table table-striped">
+                    <tr style="text-align: center;">
+                        <th style="text-align: center;">选择</th>
+                        <th style="text-align: center;">学院名称</th>
+                        <th style="text-align: center;">姓名</th>
+                        <th style="text-align: center;">年龄</th>
+                        <th style="text-align: center;">性别</th>
+                        <th style="text-align: center;">学号</th>
+                        <th style="text-align: center;">操作</th>
+                    </tr>
+                    <tr v-for="student in students">
+                        <td>
+                            <a href="javascript:;" v-on:click="selectStudent(student)"><span class="selectBox" :class="{'fa fa-check checked':student.checked}"></span></a>
+                        </td>
+                        <td v-text="student.college"></td>
+                        <td v-text="student.name"></td>
+                        <td v-text="student.age"></td>
+                        <td v-text="student.sex"></td>
+                        <td v-text="student.student_id"></td>
+                        <td>
+                            <button class="btn btn-info fl btn_left update" type="button" v-on:click="putStudent(student._id)"><i class="fa fa-pencil"></i></button>
+                            <button class="btn btn-danger fl btn_left delete" type="button" v-on:click="deleteStudent(student._id)"> <i class="fa fa-trash-o fa-lg"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="7" style="border:0">
+                            <div class="item-all-select">
+                                <a href="javascript:;" @click="selectAll(true)">
+                                    <span class="selectBox" :class="{'fa fa-check checked':checkAll}"></span>
+                                    <span>全选</span>
+                                </a>
+                            </div>
+                            <div class="item-all-cancle" @click="selectAll(false)">
+                                <a href="javascript:;"><i class="fa fa-repeat"></i>  取消选择</a>
+                            </div>
+                            <div class="item-all-delete">
+                                <a href="javascript:;" @click="deleteSelect()"><i class="fa fa-trash-o fa-lg"></i> 删除所选中的</a>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="add_box" id="add_box" :class="{'block':showFlag,'frameBox':showFlag}">
+            <h3>添加新学生</h3>
+            <form class="form-horizontal" id="student-form" v-on:submit.prevent="submitForm">
+                <div class="form-group">
+                    <label for="college" class="col-sm-4 control-label">学院名称</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="college" name="college" placeholder="学院名称" v-model.trim="student.college">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="name" class="col-sm-4 control-label">姓名</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="姓名" v-model.trim="student.name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-4 control-label">性别</label>
+                    <div class="col-sm-6">
+                        <select class="form-control" id="sex" name="sex" v-model.trim="student.sex">
+                        <option disabled value="">请选择</option>
+                        <option >男</option> 
+                        <option >女</option>
+                    </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="age" class="col-sm-4 control-label">年龄</label>
+                    <div class="col-sm-6">
+                        <input type="number" min="1" max="150" class="form-control" id="age" name="age" placeholder="年龄" v-model.trim.number='student.age'>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="student_id" class="col-sm-4 control-label">学号</label>
+                    <div class="col-sm-6">
+                        <input type="number" class="form-control" id="student_id" name="student_id" placeholder="学号" v-model.trim.number="student.student_id">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success save" id="save" @click="showFlag=true"><span class="fa fa-floppy-o"></span> 保存</button>
+
+            </form>
+            <button type="button" class="close guanbi" aria-label="Close" id="close" @click="showFlag=false"><span aria-hidden="true">&times;</span></button>
+        </div>
+
+        <!-- 修改 -->
+        <div class="add_box" id="put_box" :class="{'block frameBox':showFlag2}">
+            <h3>修改学生</h3>
+            <form class="form-horizontal" id="app2" v-on:submit.prevent="updateForm(student._id)">
+                <div class="form-group">
+                    <label for="college" class="col-sm-4 control-label">学院名称</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="college" name="college" placeholder="学院名称" v-model.trim="student.college">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="name" class="col-sm-4 control-label">姓名</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="姓名" v-model.trim="student.name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-4 control-label">性别</label>
+                    <div class="col-sm-6">
+                        <select class="form-control" id="sex" name="sex" v-model.trim="student.sex">
+                            <option disabled value="">请选择</option>
+                            <option >男</option>
+                            <option >女</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="age" class="col-sm-4 control-label">年龄</label>
+                    <div class="col-sm-6">
+                        <input type="number" min="1" max="150" class="form-control" id="age" name="age" placeholder="年龄" v-model.trim='student.age'>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="student_id" class="col-sm-4 control-label">学号</label>
+                    <div class="col-sm-6">
+                        <input type="number" class="form-control" id="student_id" name="student_id" placeholder="学号" v-model.trim="student.student_id">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success save" id="save"><span class="fa fa-pencil"></span> 修改</button>
+            </form>
+            <button type="button" class="close guanbi" aria-label="Close" @click="showFlag2=false"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="mask" :class="{'block':showFlag||showFlag2}">1</div>
+    </div>
+
+</body>
+<script src="/static/js/vue.js"></script>
+<script src="/static/js/axios.js"></script>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/index.js"></script>
+
+</html>
